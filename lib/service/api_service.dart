@@ -4,8 +4,7 @@ import 'dart:convert';
 class ApiService{
   final String baseUri = 'https://genshin.jmp.blue';
 
-
-  Future<dynamic> getCharacters() async {
+  Future<List<dynamic>> getCharacters() async {
     final response = await http.get(Uri.parse('$baseUri/characters'));
     var data = jsonDecode(response.body);
     return data;
@@ -15,5 +14,11 @@ class ApiService{
     final response = await http.get(Uri.parse('https://diabetless-api-ik6ucgm26a-et.a.run.app/meals'));
     var data = response.body;
     return jsonDecode(data);
+  }
+
+  Future<List<dynamic>> getWeapons() async {
+    final response = await http.get(Uri.parse('$baseUri/weapons'));
+    var data = jsonDecode(response.body);
+    return data;
   }
 }
