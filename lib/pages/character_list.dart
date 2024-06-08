@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsi/pages/character_detail.dart';
 import 'package:responsi/pages/weapon_list.dart';
 import 'package:responsi/service/api_service.dart';
 
@@ -50,7 +51,7 @@ class _CharacterListState extends State<CharacterList> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const WeaponList()),
+                                builder: (context) =>  CharacterDetail(id: char)),
                           );
                         },
                         child: Container(

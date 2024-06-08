@@ -10,8 +10,8 @@ class ApiService{
     return data;
   }
 
-  Future<Map<String, dynamic>> getCharacterById(int id) async {
-    final response = await http.get(Uri.parse('https://diabetless-api-ik6ucgm26a-et.a.run.app/meals'));
+  Future<Map<String, dynamic>> getCharacterByName(String name) async {
+    final response = await http.get(Uri.parse('$baseUri/characters/$name'));
     var data = response.body;
     return jsonDecode(data);
   }
