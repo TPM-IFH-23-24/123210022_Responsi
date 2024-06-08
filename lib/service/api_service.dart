@@ -16,6 +16,12 @@ class ApiService{
     return jsonDecode(data);
   }
 
+  Future<Map<String, dynamic>> getWeaponByName(String name) async {
+    final response = await http.get(Uri.parse('$baseUri/weapons/$name'));
+    var data = response.body;
+    return jsonDecode(data);
+  }
+
   Future<List<dynamic>> getWeapons() async {
     final response = await http.get(Uri.parse('$baseUri/weapons'));
     var data = jsonDecode(response.body);

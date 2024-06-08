@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:responsi/service/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CharacterDetail extends StatefulWidget{
   final String id;
@@ -23,6 +24,13 @@ class _CharacterDetailState extends State<CharacterDetail>{
 
   void _fetchCharacter(){
     genshinChar = api.getCharacterByName(widget.id);
+  }
+
+  Future<void> _saveLastSeen(String name, String imageUri, String type) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('last_seen_name', name.toLowerCase());
+    await prefs.setString('last_seen_image', imageUri);
+    await prefs.setString('last_seen_type', type);
   }
 
 
@@ -54,39 +62,57 @@ class _CharacterDetailState extends State<CharacterDetail>{
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final characterData = snapshot.data!;
+            _saveLastSeen(widget.id, "https://genshin.jmp.blue/weapons/${widget.id}/icon", 'characters');
             return SingleChildScrollView(
               padding: EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AspectRatio(
-                    aspectRatio: 4 / 3,
-                    child: Image.network(
-                      "https://genshin.jmp.blue/characters/${widget.id}/gacha-splash",
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const SizedBox(
-                          width: double.infinity,
-                          child: Center(
-                            child: Icon(
-                              Icons.error_outline_outlined,
-                            ),
-                          ),
-                        );
-                      },
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        } else {
-                          return const SizedBox(
+                  Center(
+                    child: Column(
+                      children: [
+                        AspectRatio(
+                          aspectRatio: 4 / 3,
+                          child: Image.network(
+                            "https://genshin.jmp.blue/characters/${widget.id}/gacha-splash",
+                            fit: BoxFit.cover,
                             width: double.infinity,
-                            child: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
-                        }
-                      },
+                            errorBuilder: (context, error, stackTrace) {
+                              return const SizedBox(
+                                width: double.infinity,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.error_outline_outlined,
+                                  ),
+                                ),
+                              );
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              } else {
+                                return const SizedBox(
+                                  width: double.infinity,
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(characterData['rarity'], (index) {
+                            return Icon(
+                              Icons.star,
+                              size: 20,
+                              color: Colors.amber,
+                            );
+                          }),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 10,),
@@ -99,7 +125,6 @@ class _CharacterDetailState extends State<CharacterDetail>{
                   Text('Gender: ${characterData['gender']}'),
                   Text('Nation: ${characterData['nation']}'),
                   Text('Affiliation: ${characterData['affiliation']}'),
-                  Text('Rarity: ${characterData['rarity']}'),
                   Text('Release Date: ${characterData['release']}'),
                   Text('Constellation: ${characterData['constellation']}'),
                   Text('Birthday: ${characterData['birthday']}'),
